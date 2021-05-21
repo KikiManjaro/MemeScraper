@@ -1,0 +1,120 @@
+import 'package:web_scraper/web_scraper.dart';
+
+import 'entities/Meme.dart';
+import 'entities/MiniMeme.dart';
+import 'enum/SortedBy.dart';
+import 'enum/Type.dart';
+import 'enum/UnsortableType.dart';
+
+final website = 'https://knowyourmeme.com/';
+
+class MemeScraper {
+  /// Return a Meme object containing some info found about this meme
+  static Future<Meme> getMemeInfo(String memeName) async {
+    final webScraper = WebScraper(website);
+    final endpoint = 'memes/' + memeName;
+    var meme = Meme();
+    meme.link = website + 'memes/' + memeName;
+    if (await webScraper.loadWebPage(endpoint)) {
+      final title = webScraper.getElement('section.info > h1', ['title']);
+      if (title.isNotEmpty) {
+        meme.name =
+            title[title.length - 1]['title'].toString().replaceAll('\n', '');
+      }
+      final details = webScraper.getElement(
+          'div.details-col > div.detail > span, div.details-col > div.detail > div > span',
+          ['span']);
+      if (details.isNotEmpty) {
+        if (details.length > 1) {
+          meme.status = details[1]['title'].toString().replaceAll('\n', '');
+        }
+        if (details.length > 3) {
+          meme.origin = details[3]['title'].toString().replaceAll('\n', '');
+        }
+        if (details.length > 5) {
+          meme.year = details[5]['title'].toString().replaceAll('\n', '');
+        }
+        if (details.length > 7) {
+          meme.type = details[7]['title'].toString().replaceAll('\n', '');
+        }
+      }
+      final entries = webScraper.getElement('div.entry-section > p', []);
+      if (entries.isNotEmpty) {
+        meme.about = entries[0]['title'].toString();
+      }
+      final photo = webScraper.getElement('div.photo-wrapper > a', ['href']);
+      if (photo.isNotEmpty) {
+        meme.image = photo[photo.length - 1]['attributes']['href'].toString();
+      }
+      return meme;
+    } else {
+      return null;
+    }
+  }
+
+  /// Search for a meme using a query (name, info ...) and return a List of MiniMeme
+  static Future<List<MiniMeme>> searchMemeName(String query) async {
+    final webScraper = WebScraper('https://knowyourmeme.com/');
+    final endpoint = 'search?context=entries&sort=relevance&q=' + query;
+    return await _scrapEndpointToMiniMemeList(webScraper, endpoint);
+  }
+
+  /// Transform a MiniMeme to a Meme (more info)
+  static Future<Meme> miniMemeToMeme(MiniMeme miniMeme) {
+    return getMemeInfo(miniMeme.name);
+  }
+
+  /// Return a Meme object containing some info found about this meme using a query
+  static Future<Meme> luckySearch(String query) async {
+    var list = await searchMemeName('cat');
+    var relevantMeme = list[0];
+    return await miniMemeToMeme(relevantMeme);
+  }
+
+  /// Return List of Meme found using Type and Sort
+  static Future<List<MiniMeme>> listMemes(
+      {Type type = Type.confirmed, SortedBy sortedBy = SortedBy.newest}) async {
+    final webScraper = WebScraper('https://knowyourmeme.com/');
+    final endpoint = 'memes/' + type.getValue() + sortedBy.getValue();
+    return await _scrapEndpointToMiniMemeList(webScraper, endpoint);
+  }
+
+  /// Return List of Meme found using Unsortable Type
+  static Future<List<MiniMeme>> listMemesWithUnsortedType(
+      UnsortableType type) async {
+    final webScraper = WebScraper('https://knowyourmeme.com/');
+    final endpoint = 'memes/' + type.getValue();
+    return await _scrapEndpointToMiniMemeList(webScraper, endpoint);
+  }
+
+  static Future<List<MiniMeme>> _scrapEndpointToMiniMemeList(
+      //TODO: scroll to find more result
+      WebScraper webScraper,
+      String endpoint) async {
+    if (await webScraper.loadWebPage(endpoint)) {
+      final titles = webScraper
+          .getElement('td > a, td > a > img', ['href', 'src', 'title']);
+      var list = <MiniMeme>[];
+      for (var i = 0; i < titles.length - 2; i = i + 2) {
+        var miniMeme = MiniMeme();
+        var endpoint = titles[i]['attributes']['href'].toString();
+        miniMeme.link = website + endpoint;
+        miniMeme.name =
+            endpoint.substring(endpoint.lastIndexOf('/')).replaceAll('/', '');
+        miniMeme.image = titles[i + 1]['attributes']['src'].toString();
+        miniMeme.beautifiedName =
+            titles[i + 1]['attributes']['title'].toString();
+        if (_isFieldOk(miniMeme.name) && _isFieldOk(miniMeme.beautifiedName)) {
+          list.add(miniMeme);
+        }
+      }
+      return list;
+    } else {
+      return null;
+    }
+  }
+
+  static bool _isFieldOk(String field) {
+    return field != null && field.isNotEmpty && field != 'null';
+  }
+}
