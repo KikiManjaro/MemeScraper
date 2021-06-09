@@ -21,7 +21,7 @@ extension SortedByExtension on SortedBy {
       case SortedBy.chronological:
         return '?sort=chronological';
       case SortedBy.reverse_chronological:
-        return '?sort=reverse_chronological';
+        return '?sort=reverse-chronological';
       case SortedBy.comments:
         return '?sort=comments';
       case SortedBy.images:
