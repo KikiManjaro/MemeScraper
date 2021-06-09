@@ -93,7 +93,7 @@ class MemeScraper {
       String endpoint) async {
     if (await webScraper.loadWebPage(endpoint)) {
       final titles = webScraper
-          .getElement('td > a, td > a > img', ['href', 'src', 'title']);
+          .getElement('td > a, td > a > img', ['href', 'title', 'data-src']);
       var list = <MiniMeme>[];
       for (var i = 0; i < titles.length - 2; i = i + 2) {
         var miniMeme = MiniMeme();
@@ -101,7 +101,7 @@ class MemeScraper {
         miniMeme.link = website + endpoint;
         miniMeme.name =
             endpoint.substring(endpoint.lastIndexOf('/')).replaceAll('/', '');
-        miniMeme.image = titles[i + 1]['attributes']['src'].toString();
+        miniMeme.image = titles[i + 1]['attributes']['data-src'].toString();
         miniMeme.beautifiedName =
             titles[i + 1]['attributes']['title'].toString();
         if (_isFieldOk(miniMeme.name) && _isFieldOk(miniMeme.beautifiedName)) {
