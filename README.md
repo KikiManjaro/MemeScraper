@@ -1,4 +1,4 @@
-[![Pub](https://img.shields.io/pub/v/web_scraper.svg)](https://pub.dev/packages/memescraper)
+[![Pub](https://img.shields.io/pub/v/memescraper.svg)](https://pub.dev/packages/memescraper)
 
 # A non-official API for Know Your Meme
 
