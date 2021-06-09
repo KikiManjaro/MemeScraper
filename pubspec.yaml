@@ -1,6 +1,6 @@
 name: memescraper
 description: MemeScraper is a non-official API of [Know Your Meme](https://knowyourmeme.com/) made using scraping.
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/KikiManjaro/MemeScraper
 
 environment:
