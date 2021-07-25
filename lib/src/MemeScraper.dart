@@ -71,19 +71,25 @@ class MemeScraper {
     return await miniMemeToMeme(relevantMeme);
   }
 
-  /// Return List of Meme found using Type and Sort
+  /// Return List of Meme found using Type and Sort at page number
   static Future<List<MiniMeme>> listMemes(
-      {Type type = Type.confirmed, SortedBy sortedBy = SortedBy.newest}) async {
+      {Type type = Type.confirmed,
+      SortedBy sortedBy = SortedBy.newest,
+      int page = 1}) async {
     final webScraper = WebScraper('https://knowyourmeme.com/');
-    final endpoint = 'memes/' + type.getValue() + sortedBy.getValue();
+    final endpoint = 'memes/' +
+        type.getValue() +
+        sortedBy.getValue() +
+        '/page/' +
+        page.toString();
     return await _scrapEndpointToMiniMemeList(webScraper, endpoint);
   }
 
-  /// Return List of Meme found using Unsortable Type
-  static Future<List<MiniMeme>> listMemesWithUnsortedType(
-      UnsortableType type) async {
+  /// Return List of Meme found using Unsortable Type at page number
+  static Future<List<MiniMeme>> listMemesWithUnsortedType(UnsortableType type,
+      {int page = 1}) async {
     final webScraper = WebScraper('https://knowyourmeme.com/');
-    final endpoint = 'memes/' + type.getValue();
+    final endpoint = 'memes/' + type.getValue() + '/page/' + page.toString();
     return await _scrapEndpointToMiniMemeList(webScraper, endpoint);
   }
 
