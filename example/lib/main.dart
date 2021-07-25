@@ -1,7 +1,7 @@
 import 'package:memescraper/memescraper.dart';
 
 void main() {
-  listMiniMemesAndMemes();
+  // listMiniMemesAndMemes();
   findMemeInfo();
 }
 

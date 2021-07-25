@@ -1,3 +1,6 @@
+## 1.1.1
+- Removing parenthesis and space before brackets in infos
+
 ## 1.1.0
 - Now scrapping all infos about Memes in a map
 

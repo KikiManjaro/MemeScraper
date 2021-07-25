@@ -136,8 +136,11 @@ class MemeScraper {
           map.putIfAbsent(txt, () => '');
           lastTitle = txt;
         } else {
-          map.update(
-              lastTitle, (value) => value + _removeBracketNum(txt) + '\n');
+          map.update(lastTitle, (value) {
+            txt = _removeBracketNum(txt);
+            txt = _removeParenthesisTxt(txt);
+            return value + txt + '\n';
+          });
         }
       }
     }
@@ -149,6 +152,14 @@ class MemeScraper {
   }
 
   static String _removeBracketNum(String str) {
-    return str.replaceAll(RegExp('\\[\\d+\\]'), '');
+    str = str.replaceAll(RegExp(' \\[\\d+\\]'), '');
+    str = str.replaceAll(RegExp('\\[\\d+\\]'), '');
+    return str;
+  }
+
+  static String _removeParenthesisTxt(String str) {
+    str = str.replaceAll(RegExp(' \\([^)]*\\)'), '');
+    str = str.replaceAll(RegExp('\\([^)]*\\)'), '');
+    return str;
   }
 }
