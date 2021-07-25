@@ -38,9 +38,10 @@ class MemeScraper {
           meme.type = details[7]['title'].toString().replaceAll('\n', '');
         }
       }
-      final entries = webScraper.getElement('div.entry-section > p', []);
+      final entries = webScraper
+          .getElement('div.entry-section > h2, div.entry-section > p', []);
       if (entries.isNotEmpty) {
-        meme.about = entries[0]['title'].toString();
+        meme.infos = createMemeInfos(entries);
       }
       final photo = webScraper.getElement('div.photo-wrapper > a', ['href']);
       if (photo.isNotEmpty) {
@@ -79,9 +80,9 @@ class MemeScraper {
     final webScraper = WebScraper('https://knowyourmeme.com/');
     final endpoint = 'memes/' +
         type.getValue() +
-        sortedBy.getValue() +
         '/page/' +
-        page.toString();
+        page.toString() +
+        sortedBy.getValue();
     return await _scrapEndpointToMiniMemeList(webScraper, endpoint);
   }
 
@@ -122,5 +123,32 @@ class MemeScraper {
 
   static bool _isFieldOk(String field) {
     return field != null && field.isNotEmpty && field != 'null';
+  }
+
+  static Map<String, String> createMemeInfos(
+      List<Map<String, dynamic>> entries) {
+    var map = <String, String>{};
+    var lastTitle = '';
+    for (var entry in entries) {
+      String txt = entry['title'];
+      if (txt.isNotEmpty) {
+        if (_getSpaceCount(txt) < 3) {
+          map.putIfAbsent(txt, () => '');
+          lastTitle = txt;
+        } else {
+          map.update(
+              lastTitle, (value) => value + _removeBracketNum(txt) + '\n');
+        }
+      }
+    }
+    return map;
+  }
+
+  static int _getSpaceCount(String str) {
+    return str.length - str.replaceAll(' ', '').length;
+  }
+
+  static String _removeBracketNum(String str) {
+    return str.replaceAll(RegExp('\\[\\d+\\]'), '');
   }
 }

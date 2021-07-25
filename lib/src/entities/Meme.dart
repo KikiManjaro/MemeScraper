@@ -5,13 +5,13 @@ class Meme {
   String origin;
   String year;
   String type;
-  String about;
   String link;
+  Map<String, String> infos;
 
   Meme();
 
   @override
   String toString() {
-    return 'Meme{name: $name, image: $image, status: $status, origin: $origin, year: $year, type: $type, about: $about, link: $link}';
+    return 'Meme{name: $name, image: $image, status: $status, origin: $origin, year: $year, type: $type, link: $link, infos: $infos}';
   }
 }
