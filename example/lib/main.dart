@@ -1,8 +1,9 @@
 import 'package:memescraper/memescraper.dart';
 
 void main() {
-  // listMiniMemesAndMemes();
+  listMiniMemesAndMemes();
   findMemeInfo();
+  searchMeme();
 }
 
 void listMiniMemesAndMemes() async {
@@ -21,4 +22,9 @@ void listMiniMemesAndMemes() async {
 void findMemeInfo() async {
   var meme = await MemeScraper.getMemeInfo('rickroll');
   print(meme);
+}
+
+void searchMeme() async {
+  var memes = await MemeScraper.searchMemeName('rick', page: 2);
+  print(memes);
 }

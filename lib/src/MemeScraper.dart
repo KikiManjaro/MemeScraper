@@ -54,9 +54,12 @@ class MemeScraper {
   }
 
   /// Search for a meme using a query (name, info ...) and return a List of MiniMeme
-  static Future<List<MiniMeme>> searchMemeName(String query) async {
+  static Future<List<MiniMeme>> searchMemeName(String query, {page = 1}) async {
     final webScraper = WebScraper('https://knowyourmeme.com/');
-    final endpoint = 'search?context=entries&sort=relevance&q=' + query;
+    final endpoint = 'search?context=entries&page=' +
+        page.toString() +
+        '&sort=relevance&q=' +
+        query;
     return await _scrapEndpointToMiniMemeList(webScraper, endpoint);
   }
 
@@ -128,7 +131,7 @@ class MemeScraper {
   static Map<String, String> createMemeInfos(
       List<Map<String, dynamic>> entries) {
     var map = <String, String>{};
-    var lastTitle = '';
+    var lastTitle = 'Information';
     for (var entry in entries) {
       String txt = entry['title'];
       if (txt.isNotEmpty) {
@@ -136,11 +139,16 @@ class MemeScraper {
           map.putIfAbsent(txt, () => '');
           lastTitle = txt;
         } else {
-          map.update(lastTitle, (value) {
-            txt = _removeBracketNum(txt);
-            txt = _removeParenthesisTxt(txt);
-            return value + txt + '\n';
-          });
+          txt = _removeBracketNum(txt);
+          txt = _removeParenthesisTxt(txt);
+          var newVal = txt + '\n';
+          if (map.containsKey(lastTitle)) {
+            map.update(lastTitle, (value) {
+              return value + newVal;
+            });
+          } else {
+            map.putIfAbsent(lastTitle, () => newVal);
+          }
         }
       }
     }

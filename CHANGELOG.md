@@ -1,3 +1,9 @@
+## 1.1.3
+- Add meme information with title 'Information' if data doesn't contains title
+
+## 1.1.2
+- Add possibility to search memes by name on a precise page
+
 ## 1.1.1
 - Removing parenthesis and space before brackets in infos
 
