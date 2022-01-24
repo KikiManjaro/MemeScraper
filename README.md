@@ -12,7 +12,7 @@ In your `pubspec.yaml` root add:
 
 ```yaml
 dependencies:
-  memescrapper:
+  memescrapper: ^1.1.3
 ```
 
 then,
